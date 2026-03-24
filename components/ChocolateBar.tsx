@@ -2,80 +2,91 @@
 
 import { useGLTF } from '@react-three/drei';
 import { useScroll, useTransform, useSpring } from 'framer-motion';
-import { motion } from 'framer-motion-3d';
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 
 export default function ChocolateBar() {
   const { scene } = useGLTF('/assets/mrbeast_crunch_bar.gltf');
   const clonedScene = useMemo(() => scene.clone(true), [scene]);
-  
+
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 40, damping: 25 });
 
-  // 1. "Drop" Entry Animation
-  // Animate from y: 10 to y: 0 when mounted.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const BASE_Y_OFFSET = Math.PI;
 
-  // 2. CHOREOGRAPHY (The Glides)
-  // 0% - 15%: Stationary (Hero)
-  // 15% - 40%: Glide to RIGHT (x = 3)
-  // 45% - 70%: Glide to LEFT (x = -3)
-  // 75% - 100%: Center (x = 0)
-  const groupX = useTransform(smoothProgress, [0, 0.15, 0.40, 0.45, 0.70, 0.75, 1], [0, 0, 3, 3, -3, -3, 0]);
-  
-  // Z Zoom at the end
-  const groupZ = useTransform(smoothProgress, [0, 0.75, 1], [0, 0, 2]);
-
-  // Orientation
-  // Default centered front branding
-  const BEAST_FRONT_ROT_Y = 0; // The GLTF might need 0, Math.PI, or Math.PI / 2. Assuming 0 for now.
-  
-  // Kinetic Rotation:
-  // Glide Right -> +45 deg
-  // Glide Left -> -45 deg
-  const kineticRotationY = useTransform(
-    smoothProgress, 
-    [0, 0.15, 0.40, 0.45, 0.70, 0.75, 1], 
-    [0, 0, Math.PI / 4, Math.PI / 4, -Math.PI / 4, -Math.PI / 4, 0]
+  // ── Position: bar glides left/right, text owns the opposite side ──
+  const groupX = useTransform(
+    smoothProgress,
+    [0, 0.15, 0.40, 0.45, 0.70, 0.75, 1],
+    [0, 0, 2.5, 2.5, -2.5, -2.5, 0]
   );
-  
-  // Hero close rapid spin
-  const heroSpinY = useTransform(smoothProgress, [0, 0.75, 1], [0, 0, Math.PI * 4]);
-  const finalRotY = useTransform(() => BEAST_FRONT_ROT_Y + kineticRotationY.get() + heroSpinY.get());
-  
-  // Slight tilt forward
-  const groupRotX = useTransform(smoothProgress, [0, 1], [0.1, 0.1]);
 
-  // Floating effect
-  const [hoverY, setHoverY] = useState(0);
-  useFrame((state) => {
-    // 3. VERTICAL FLOAT (Math.sin) hovering in zero-gravity
+  // ✅ Bar moves DOWN slightly on beat 4 so "GO BEAST" headline has room above
+  const groupY = useTransform(
+    smoothProgress,
+    [0, 0.75, 1],
+    [0, 0, -0.5]
+  );
+
+  // ✅ Zoom in gently on beat 4
+  const groupZ = useTransform(smoothProgress, [0, 0.75, 1], [0, 0, 1.5]);
+
+  const rotX = useTransform(
+    smoothProgress,
+    [0, 0.15, 0.40, 0.45, 0.70, 0.75, 1],
+    [0.05, 0.05, 0.05, -0.05, -0.05, 0, 0.3]
+  );
+
+  const rotY = useTransform(
+    smoothProgress,
+    [0, 0.15, 0.40, 0.45, 0.70, 0.75, 1],
+    [
+      BASE_Y_OFFSET,
+      BASE_Y_OFFSET,
+      BASE_Y_OFFSET + 0.35,
+      BASE_Y_OFFSET + 0.35,
+      BASE_Y_OFFSET - 0.35,
+      BASE_Y_OFFSET - 0.35,
+      BASE_Y_OFFSET + Math.PI * 2,
+    ]
+  );
+
+  const rotZ = useTransform(
+    smoothProgress,
+    [0, 0.15, 0.40, 0.45, 0.70, 0.75, 1],
+    [0, 0, 0.06, 0.06, -0.06, -0.06, 0]
+  );
+
+  const outerRef = useRef<THREE.Group>(null);
+  const floatRef = useRef<THREE.Group>(null);
+  const entryScale = useRef({ value: 0 });
+
+  useFrame((state, delta) => {
+    if (!outerRef.current || !floatRef.current) return;
+
+    // ✅ Target scale reduced from 1.2 → 0.85 so full bar is visible in frame
+    entryScale.current.value += (0.85 - entryScale.current.value) * Math.min(delta * 3.5, 1);
+    outerRef.current.scale.setScalar(entryScale.current.value);
+
+    outerRef.current.position.x = groupX.get();
+    outerRef.current.position.y = groupY.get();
+    outerRef.current.position.z = groupZ.get();
+    outerRef.current.rotation.x = rotX.get();
+    outerRef.current.rotation.y = rotY.get();
+    outerRef.current.rotation.z = rotZ.get();
+
+    // Float bob
     const t = state.clock.getElapsedTime();
-    setHoverY(Math.sin(t * 1.5) * 0.15);
+    floatRef.current.position.y = Math.sin(t * 1.4) * 0.12;
   });
 
   return (
-    <motion.group 
-      initial={{ y: 10, scale: 0.1 }}
-      animate={mounted ? { y: hoverY, scale: 1.2 } : { y: 10, scale: 0.1 }}
-      transition={{ type: "spring", stiffness: 60, damping: 12, mass: 1 }}
-      position-x={groupX} 
-      position-z={groupZ} 
-      rotation-y={finalRotY} 
-      rotation-x={groupRotX}
-    >
-      <primitive object={clonedScene} />
-      
-      {/* Dynamic tracking rim light inside the group so it stays attached to the bar's physical position */}
-      {/* Wait, the user asked for it in Experience? Or tracking X position. 
-          If placed inside the group, it follows the X position perfectly, but it rotates with the bar.
-          Let's place it here but counter-rotate it so it stays pointing from behind. */}
-      {/* We won't put the Spotlight here, we'll put it in Experience to avoid rotating light artifacts. */}
-    </motion.group>
+    <group ref={outerRef}>
+      <group ref={floatRef}>
+        <primitive object={clonedScene} />
+      </group>
+    </group>
   );
 }
 
