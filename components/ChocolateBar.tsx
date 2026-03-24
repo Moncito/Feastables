@@ -56,8 +56,7 @@ export default function ChocolateBar({ beat }: ChocolateBarProps) {
     s.rotY += (target.rotY - s.rotY) * lerpSpeed;
     s.rotZ += (target.rotZ - s.rotZ) * lerpSpeed;
 
-    // Scale: entry animation on first load
-    const targetScale = entryDone.current ? target.scale : 0;
+    // Scale lerp toward target
     s.scale += (target.scale - s.scale) * lerpSpeed;
 
     // Apply to outer group

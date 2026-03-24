@@ -151,7 +151,7 @@ export default function Home() {
               >
                 <div className="max-w-[40vw]">
                   <p className="font-geistMono text-[10px] tracking-[0.35em] text-white/40 mb-3 uppercase">
-                    — What's inside
+                    — What&apos;s inside
                   </p>
                   <h2 className="text-[10vw] font-black uppercase tracking-tighter leading-[0.85] text-white/90 drop-shadow-2xl">
                     THE<br />CLEAN<br />SNAP.
