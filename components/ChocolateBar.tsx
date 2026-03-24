@@ -1,85 +1,80 @@
 'use client';
 
 import { useGLTF } from '@react-three/drei';
-import { useScroll, useTransform, useSpring } from 'framer-motion';
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function ChocolateBar() {
+interface ChocolateBarProps {
+  beat: number;
+}
+
+// Target states per beat
+// BASE_Y_OFFSET flips model to face camera. Change to 0 if you see the back.
+const BASE_Y = Math.PI;
+
+const BEAT_TARGETS = [
+  // Beat 0 — Hero: perfectly centered, upright, face-forward
+  { x: 0, y: 0, z: 0, scale: 0.7, rotX: .1, rotY: BASE_Y, rotZ: 0 },
+  // Beat 1 — Snap: text is LEFT → bar glides RIGHT (+x)
+  { x: 2.8, y: 0, z: 0, scale: 0.85, rotX: 0.04, rotY: BASE_Y + 0.2, rotZ: 0.03 },
+  // Beat 2 — Cream: text is RIGHT → bar glides LEFT (-x)
+  { x: -2.8, y: 0, z: 0, scale: 0.85, rotX: 0.04, rotY: BASE_Y - 4.7, rotZ: -0.03 },
+  // Beat 3 — Beast: center, zoom in dramatically, slight tilt for drama
+  { x: 0, y: -0.3, z: 2.5, scale: 1.15, rotX: 0.18, rotY: BASE_Y, rotZ: 0 },
+];
+
+export default function ChocolateBar({ beat }: ChocolateBarProps) {
   const { scene } = useGLTF('/assets/mrbeast_crunch_bar.gltf');
   const clonedScene = useMemo(() => scene.clone(true), [scene]);
 
-  const { scrollYProgress } = useScroll();
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 40, damping: 25 });
-
-  const BASE_Y_OFFSET = Math.PI;
-
-  // ── Position: bar glides left/right, text owns the opposite side ──
-  const groupX = useTransform(
-    smoothProgress,
-    [0, 0.15, 0.40, 0.45, 0.70, 0.75, 1],
-    [0, 0, 2.5, 2.5, -2.5, -2.5, 0]
-  );
-
-  // ✅ Bar moves DOWN slightly on beat 4 so "GO BEAST" headline has room above
-  const groupY = useTransform(
-    smoothProgress,
-    [0, 0.75, 1],
-    [0, 0, -0.5]
-  );
-
-  // ✅ Zoom in gently on beat 4
-  const groupZ = useTransform(smoothProgress, [0, 0.75, 1], [0, 0, 1.5]);
-
-  const rotX = useTransform(
-    smoothProgress,
-    [0, 0.15, 0.40, 0.45, 0.70, 0.75, 1],
-    [0.05, 0.05, 0.05, -0.05, -0.05, 0, 0.3]
-  );
-
-  const rotY = useTransform(
-    smoothProgress,
-    [0, 0.15, 0.40, 0.45, 0.70, 0.75, 1],
-    [
-      BASE_Y_OFFSET,
-      BASE_Y_OFFSET,
-      BASE_Y_OFFSET + 0.35,
-      BASE_Y_OFFSET + 0.35,
-      BASE_Y_OFFSET - 0.35,
-      BASE_Y_OFFSET - 0.35,
-      BASE_Y_OFFSET + Math.PI * 2,
-    ]
-  );
-
-  const rotZ = useTransform(
-    smoothProgress,
-    [0, 0.15, 0.40, 0.45, 0.70, 0.75, 1],
-    [0, 0, 0.06, 0.06, -0.06, -0.06, 0]
-  );
-
   const outerRef = useRef<THREE.Group>(null);
   const floatRef = useRef<THREE.Group>(null);
-  const entryScale = useRef({ value: 0 });
 
-  useFrame((state, delta) => {
+  // Current interpolated state (starts at beat 0 target)
+  const state = useRef({
+    x: 0, y: 0, z: 0, scale: 0,           // scale starts at 0 for entry
+    rotX: 0, rotY: BASE_Y, rotZ: 0,
+  });
+
+  // Entry: scale lerps from 0 → target on mount
+  const entryDone = useRef(false);
+
+  useFrame((three, delta) => {
     if (!outerRef.current || !floatRef.current) return;
 
-    // ✅ Target scale reduced from 1.2 → 0.85 so full bar is visible in frame
-    entryScale.current.value += (0.85 - entryScale.current.value) * Math.min(delta * 3.5, 1);
-    outerRef.current.scale.setScalar(entryScale.current.value);
+    const target = BEAT_TARGETS[beat];
+    const s = state.current;
 
-    outerRef.current.position.x = groupX.get();
-    outerRef.current.position.y = groupY.get();
-    outerRef.current.position.z = groupZ.get();
-    outerRef.current.rotation.x = rotX.get();
-    outerRef.current.rotation.y = rotY.get();
-    outerRef.current.rotation.z = rotZ.get();
+    // Lerp speed — 0.08 = smooth cinematic, higher = snappier
+    const lerpSpeed = Math.min(delta * 5, 1);
 
-    // Float bob
-    const t = state.clock.getElapsedTime();
-    floatRef.current.position.y = Math.sin(t * 1.4) * 0.12;
+    s.x += (target.x - s.x) * lerpSpeed;
+    s.y += (target.y - s.y) * lerpSpeed;
+    s.z += (target.z - s.z) * lerpSpeed;
+    s.rotX += (target.rotX - s.rotX) * lerpSpeed;
+    s.rotY += (target.rotY - s.rotY) * lerpSpeed;
+    s.rotZ += (target.rotZ - s.rotZ) * lerpSpeed;
+
+    // Scale: entry animation on first load
+    const targetScale = entryDone.current ? target.scale : 0;
+    s.scale += (target.scale - s.scale) * lerpSpeed;
+
+    // Apply to outer group
+    outerRef.current.position.set(s.x, s.y, s.z);
+    outerRef.current.rotation.set(s.rotX, s.rotY, s.rotZ);
+    outerRef.current.scale.setScalar(s.scale);
+
+    // Float bob on inner group
+    const t = three.clock.getElapsedTime();
+    floatRef.current.position.y = Math.sin(t * 1.4) * 0.1;
   });
+
+  // Trigger entry scale after mount
+  useEffect(() => {
+    const timer = setTimeout(() => { entryDone.current = true; }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <group ref={outerRef}>
