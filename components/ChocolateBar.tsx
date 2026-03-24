@@ -15,13 +15,13 @@ const BASE_Y = Math.PI;
 
 const BEAT_TARGETS = [
   // Beat 0 — Hero: perfectly centered, upright, face-forward
-  { x: 0, y: 0, z: 0, scale: 0.7, rotX: .1, rotY: BASE_Y, rotZ: 0 },
+  { x: 0, y: 0, z: 0, scale: 0.8, rotX: 0, rotY: BASE_Y + .5, rotZ: 0 },
   // Beat 1 — Snap: text is LEFT → bar glides RIGHT (+x)
   { x: 2.8, y: 0, z: 0, scale: 0.85, rotX: 0.04, rotY: BASE_Y + 0.2, rotZ: 0.03 },
   // Beat 2 — Cream: text is RIGHT → bar glides LEFT (-x)
-  { x: -2.8, y: 0, z: 0, scale: 0.85, rotX: 0.04, rotY: BASE_Y - 4.7, rotZ: -0.03 },
-  // Beat 3 — Beast: center, zoom in dramatically, slight tilt for drama
-  { x: 0, y: -0.3, z: 2.5, scale: 1.15, rotX: 0.18, rotY: BASE_Y, rotZ: 0 },
+  { x: -2.8, y: 0, z: 0, scale: 0.85, rotX: 0.04, rotY: BASE_Y - + 5, rotZ: -0.03 },
+  // Beat 3 — Beast: big in-your-face hero shot, tilt top toward camera
+  { x: 0, y: .2, z: 3.5, scale: .5, rotX: 0.5, rotY: BASE_Y + 0.4, rotZ: 1 },
 ];
 
 export default function ChocolateBar({ beat }: ChocolateBarProps) {

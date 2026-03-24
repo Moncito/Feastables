@@ -200,32 +200,114 @@ export default function Home() {
             )}
           </AnimatePresence>
 
-          {/* BEAT 3 — BEAST: headline top, CTA bottom */}
+          {/* BEAT 3 — BEAST: full cinematic product reveal */}
           <AnimatePresence>
             {beat === 3 && (
               <motion.div
                 key="beast-text"
-                className="absolute inset-0 flex flex-col items-center justify-between py-[6%]"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
+                className="absolute inset-0"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
               >
-                <div className="text-center">
-                  <p className="font-geistMono text-[10px] tracking-[0.5em] text-white/30 mb-2 uppercase">Ready?</p>
-                  <h1 className="text-[13vw] font-black uppercase tracking-tighter leading-[0.82] text-white/90 drop-shadow-[0_0_40px_rgba(255,255,255,0.3)]">
-                    GO BEAST
-                  </h1>
-                </div>
-                <div />
-                <div className="flex flex-col items-center gap-3 pointer-events-auto z-30">
-                  <button className="px-14 py-6 bg-white text-[#FF5800] font-black text-2xl uppercase tracking-widest rounded-[2rem] hover:scale-105 hover:shadow-[0_0_60px_rgba(255,255,255,0.4)] active:scale-95 transition-all shadow-2xl">
-                    Buy Now — $3.99
-                  </button>
-                  <p className="font-geistMono text-[10px] tracking-[0.3em] text-white/25 uppercase">
+                {/* Pulsing orange radial glow centered behind the bar */}
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  animate={{ opacity: [0.3, 0.55, 0.3] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{
+                    background: 'radial-gradient(ellipse 45% 60% at 50% 55%, rgba(255,88,0,0.45) 0%, transparent 70%)',
+                  }}
+                />
+
+                {/* "GO" — top left wallpaper, slides in from left */}
+                <motion.div
+                  className="absolute top-[6%] left-[4%]"
+                  initial={{ opacity: 0, x: -60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1, duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
+                >
+                  <span className="text-[20vw] font-black uppercase tracking-tighter leading-none text-white/10 select-none">
+                    GO
+                  </span>
+                </motion.div>
+
+                {/* "BEAST" — bottom right wallpaper, slides in from right */}
+                <motion.div
+                  className="absolute bottom-[2%] right-[2%]"
+                  initial={{ opacity: 0, x: 60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.15, duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
+                >
+                  <span className="text-[20vw] font-black uppercase tracking-tighter leading-none text-white/10 select-none">
+                    BEAST
+                  </span>
+                </motion.div>
+
+                {/* Floating ingredient tags — staggered, orbit around the bar */}
+                {[
+                  { label: 'MILK CHOC', sub: 'Base', delay: 0.2, top: '18%', left: '6%'  },
+                  { label: 'PUFFED RICE', sub: 'Crunch texture', delay: 0.3, top: '42%', left: '4%'  },
+                  { label: 'GRASS-FED', sub: 'Milk source', delay: 0.4, top: '18%', right: '6%' },
+                  { label: '07 INGR.', sub: 'Clean formula', delay: 0.5, top: '42%', right: '4%' },
+                ].map(({ label, sub, delay, top, left, right }) => (
+                  <motion.div
+                    key={label}
+                    className="absolute flex flex-col gap-0.5"
+                    style={{ top, left, right }}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay, duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+                  >
+                    <span className="font-geistMono text-[10px] md:text-xs tracking-[0.3em] text-white/80 uppercase">
+                      {label}
+                    </span>
+                    <span className="font-geistMono text-[9px] tracking-[0.2em] text-white/30 uppercase">
+                      — {sub}
+                    </span>
+                    {/* Thin connector line grows outward */}
+                    <motion.div
+                      className={`h-px bg-white/20 mt-1 origin-${left ? 'left' : 'right'}`}
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ delay: delay + 0.2, duration: 0.5 }}
+                    />
+                  </motion.div>
+                ))}
+
+                {/* Bottom-anchored frosted CTA card — slides up */}
+                <motion.div
+                  className="absolute bottom-[5%] left-1/2 -translate-x-1/2 pointer-events-auto z-30 flex flex-col items-center gap-3"
+                  initial={{ opacity: 0, y: 60 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35, duration: 0.75, ease: [0.34, 1.56, 0.64, 1] }}
+                >
+                  {/* Price tag */}
+                  <div className="font-geistMono text-[10px] tracking-[0.4em] text-white/40 uppercase">
+                    Only $3.99
+                  </div>
+
+                  {/* CTA Button with glow pulse */}
+                  <motion.button
+                    className="relative px-16 py-5 bg-white text-[#FF5800] font-black text-2xl uppercase tracking-widest rounded-[2rem] shadow-2xl overflow-hidden"
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.96 }}
+                  >
+                    {/* Inner pulse ring */}
+                    <motion.span
+                      className="absolute inset-0 rounded-[2rem] border-2 border-[#FF5800]/30"
+                      animate={{ scale: [1, 1.08, 1], opacity: [0.6, 0, 0.6] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    />
+                    Buy Now
+                  </motion.button>
+
+                  <p className="font-geistMono text-[9px] tracking-[0.35em] text-white/20 uppercase">
                     Free shipping over $25
                   </p>
-                </div>
+                </motion.div>
+
               </motion.div>
             )}
           </AnimatePresence>
