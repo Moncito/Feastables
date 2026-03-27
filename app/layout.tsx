@@ -1,9 +1,22 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Bebas_Neue, Barlow_Condensed } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import Navbar from "@/components/Navbar";
 
-const inter = Inter({ subsets: ["latin"], weight: ["900"], variable: "--font-inter" });
+const bebasNeue = Bebas_Neue({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-bebas-neue",
+  display: "swap",
+});
+
+const barlowCondensed = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-barlow-condensed",
+  display: "swap",
+});
 
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
@@ -12,8 +25,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "MrBeast Feastables",
-  description: "Feast On This - The Clean Snap",
+  title: "Feastables × MrBeast",
+  description: "Feast On This. Only 6 Ingredients.",
 };
 
 export default function RootLayout({
@@ -24,8 +37,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${geistMono.variable} antialiased`}
+        className={`${
+          bebasNeue.variable
+        } ${barlowCondensed.variable} ${geistMono.variable}`}
+        style={{ fontFamily: "var(--font-barlow-condensed), sans-serif" }}
       >
+        <Navbar />
         {children}
       </body>
     </html>

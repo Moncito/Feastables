@@ -26,3 +26,27 @@
   width: 0px;
   background: transparent;
 }
+
+/* ── TICKER MARQUEE ── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-33.3334%); }
+}
+
+.ticker-track {
+  animation: marquee 28s linear infinite;
+  will-change: transform;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+/* ── NAV FONTS  ── */
+.font-bebas {
+  font-family: var(--font-bebas-neue), 'Arial Black', sans-serif;
+}
+
+.font-barlow {
+  font-family: var(--font-barlow-condensed), 'Arial Narrow', sans-serif;
+}

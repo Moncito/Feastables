@@ -11,12 +11,16 @@ const config: Config = {
       colors: {
         background: "#050505",
         foreground: "#ffffff",
-        beastOrange: "#FF5800",
+        beastOrange: "#FF5A00",
+        beastDark: "#1A0A00",
+        heroOrange: "#C8470A",
         vibrantBlue: "#0062FF",
       },
       fontFamily: {
         inter: ['var(--font-inter)'],
         geistMono: ['var(--font-geist-mono)'],
+        bebas: ['var(--font-bebas-neue)', 'sans-serif'],
+        barlow: ['var(--font-barlow-condensed)', 'sans-serif'],
       },
       backgroundImage: {
         'beast-gradient': 'linear-gradient(to top, #0062FF22, transparent)',
