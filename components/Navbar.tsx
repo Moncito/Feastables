@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { useProgress } from "@react-three/drei";
 
 const NAV_LINKS = [
   { href: "/shop", label: "Shop" },
@@ -18,14 +19,22 @@ const TICKER_SEGMENT =
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const { progress } = useProgress();
   const cartCount = 3;
+
+  useEffect(() => {
+    if (progress === 100) {
+      setTimeout(() => setLoaded(true), 500);
+    }
+  }, [progress]);
 
   return (
     <header className="absolute top-0 left-0 w-full z-50 font-barlow">
       {/* ━━ MAIN NAV BAR ━━ */}
       <motion.div
         initial={{ y: -72, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        animate={loaded ? { y: 0, opacity: 1 } : { y: -72, opacity: 0 }}
         transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
         className="bg-[#1A0A00] border-b-[3px] border-[#FF5A00]"
       >
@@ -165,7 +174,7 @@ export default function Navbar() {
       {/* ━━ ANNOUNCEMENT TICKER ━━ */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        animate={loaded ? { opacity: 1 } : { opacity: 0 }}
         transition={{ delay: 0.35, duration: 0.4 }}
         className="bg-[#FF5A00] overflow-hidden h-[30px] flex items-center"
       >
