@@ -22,6 +22,8 @@ const BEAT_TARGETS = [
   { x: -2.8, y: 0, z: 0, scale: 0.85, rotX: 0.04, rotY: BASE_Y - + 5, rotZ: -0.03 },
   // Beat 3 — Beast: big in-your-face hero shot, tilt top toward camera
   { x: 0, y: .2, z: 3.5, scale: .5, rotX: 0.5, rotY: BASE_Y + 0.4, rotZ: 1 },
+  // Beat 4 — Verdict: centered proud display, continuous spin takes over rotY
+  { x: 0, y: .2, z: 3, scale: 0.5, rotX: 1, rotY: BASE_Y + 0, rotZ: 1 },
 ];
 
 export default function ChocolateBar({ beat }: ChocolateBarProps) {
@@ -53,7 +55,12 @@ export default function ChocolateBar({ beat }: ChocolateBarProps) {
     s.y += (target.y - s.y) * lerpSpeed;
     s.z += (target.z - s.z) * lerpSpeed;
     s.rotX += (target.rotX - s.rotX) * lerpSpeed;
-    s.rotY += (target.rotY - s.rotY) * lerpSpeed;
+    // Beat 4 — continuous slow proud spin instead of lerping to a fixed angle
+    if (beat === 4) {
+      s.rotY += delta * 0.6;
+    } else {
+      s.rotY += (target.rotY - s.rotY) * lerpSpeed;
+    }
     s.rotZ += (target.rotZ - s.rotZ) * lerpSpeed;
 
     // Scale lerp toward target

@@ -13,6 +13,7 @@ const BEATS = [
   { id: 1, label: 'snap' },
   { id: 2, label: 'cream' },
   { id: 3, label: 'beast' },
+  { id: 4, label: 'verdict' },
 ];
 
 export default function Home() {
@@ -102,7 +103,9 @@ export default function Home() {
         <motion.div
           className="absolute inset-0 z-0"
           animate={{
-            background: beat === 3
+            background: beat === 4
+              ? 'radial-gradient(ellipse at center, #120900 0%, #050300 100%)'
+              : beat === 3
               ? 'radial-gradient(ellipse at center, #001a4d 0%, #000510 100%)'
               : 'linear-gradient(135deg, #FF5800 0%, #C43D00 100%)'
           }}
@@ -306,6 +309,133 @@ export default function Home() {
                   <p className="font-geistMono text-[9px] tracking-[0.35em] text-white/20 uppercase">
                     Free shipping over $25
                   </p>
+                </motion.div>
+
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* BEAT 4 — VERDICT: social proof / hype closer */}
+          <AnimatePresence>
+            {beat === 4 && (
+              <motion.div
+                key="verdict-text"
+                className="absolute inset-0"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+              >
+                {/* Warm golden radial glow, slowly pulsing */}
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  animate={{ opacity: [0.25, 0.55, 0.25] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{
+                    background: 'radial-gradient(ellipse 50% 55% at 50% 50%, rgba(255,180,0,0.18) 0%, transparent 70%)',
+                  }}
+                />
+
+                {/* "THE" — top-left wallpaper */}
+                <motion.div
+                  className="absolute top-[4%] left-[2%]"
+                  initial={{ opacity: 0, x: -60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1, duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
+                >
+                  <span className="text-[20vw] font-black uppercase tracking-tighter leading-none text-white/10 select-none">
+                    THE
+                  </span>
+                </motion.div>
+
+                {/* "VERDICT" — bottom-right wallpaper */}
+                <motion.div
+                  className="absolute bottom-[2%] right-[1%]"
+                  initial={{ opacity: 0, x: 60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.15, duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
+                >
+                  <span className="text-[20vw] font-black uppercase tracking-tighter leading-none text-white/10 select-none">
+                    VERDICT
+                  </span>
+                </motion.div>
+
+                {/* Star rating — top center */}
+                <motion.div
+                  className="absolute top-[8%] left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.6 }}
+                >
+                  <p className="font-geistMono text-[9px] tracking-[0.4em] text-white/30 uppercase">Community Rating</p>
+                  <div className="flex gap-2">
+                    {[0, 1, 2, 3, 4].map((i) => (
+                      <motion.span
+                        key={i}
+                        className="text-[#FFB800] text-xl md:text-2xl"
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3 + i * 0.08, duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
+                      >
+                        ★
+                      </motion.span>
+                    ))}
+                  </div>
+                  <p className="font-geistMono text-[9px] tracking-[0.25em] text-white/20 uppercase">4.9 &middot; 12,847 reviews</p>
+                </motion.div>
+
+                {/* Pull-quote — left side */}
+                <motion.div
+                  className="absolute left-[5%] top-1/2 -translate-y-1/2 max-w-[35vw]"
+                  initial={{ opacity: 0, x: -60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.25, duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
+                >
+                  <p className="font-geistMono text-[9px] tracking-[0.4em] text-white/30 uppercase mb-3">&mdash; Mr. Beast</p>
+                  <h2 className="text-[7vw] font-black uppercase tracking-tighter leading-[0.88] text-white/90 drop-shadow-2xl">
+                    &ldquo;I&apos;D<br />EAT 10.&rdquo;
+                  </h2>
+                </motion.div>
+
+                {/* Review chips — right side */}
+                {[
+                  { quote: "Best bar I\u2019ve ever had.", handle: '@chocolatelover', delay: 0.3, top: '20%' },
+                  { quote: 'Clean ingredients. Finally.', handle: '@healthnut99', delay: 0.4, top: '44%' },
+                  { quote: "My kids won\u2019t stop asking.", handle: '@momof3', delay: 0.5, top: '68%' },
+                ].map(({ quote, handle, delay, top }) => (
+                  <motion.div
+                    key={handle}
+                    className="absolute right-[5%] flex flex-col gap-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 max-w-[28vw] backdrop-blur-sm"
+                    style={{ top }}
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay, duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+                  >
+                    <p className="font-geistMono text-[10px] md:text-xs text-white/70 leading-relaxed">&ldquo;{quote}&rdquo;</p>
+                    <p className="font-geistMono text-[9px] tracking-widest text-white/30 uppercase">{handle}</p>
+                  </motion.div>
+                ))}
+
+                {/* Bottom CTA echo */}
+                <motion.div
+                  className="absolute bottom-[5%] left-1/2 -translate-x-1/2 pointer-events-auto z-30 flex flex-col items-center gap-2"
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
+                >
+                  <motion.button
+                    className="relative px-12 py-4 bg-[#FFB800] text-black font-black text-xl uppercase tracking-widest rounded-[2rem] shadow-2xl overflow-hidden"
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.96 }}
+                  >
+                    <motion.span
+                      className="absolute inset-0 rounded-[2rem] border-2 border-[#FFB800]/40"
+                      animate={{ scale: [1, 1.08, 1], opacity: [0.6, 0, 0.6] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    />
+                    Get Yours
+                  </motion.button>
+                  <p className="font-geistMono text-[9px] tracking-[0.35em] text-white/20 uppercase">Free shipping over $25</p>
                 </motion.div>
 
               </motion.div>
