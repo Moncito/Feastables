@@ -94,7 +94,7 @@ A fully built navbar ready to be enabled:
 - Search and Cart icon buttons (cart shows item count badge)
 - "FEAST NOW" CTA button with angled clip-path
 - Mobile hamburger menu with staggered link animation
-- Announcement ticker marquee: _"ONLY 6 INGREDIENTS ✦ MILK CHOCOLATE WITH PUFFED RICE ✦ NEW CRUNCH BAR — AVAILABLE NOW"_
+- Announcement ticker marquee: _"ONLY 6 INGREDIENTS  MILK CHOCOLATE WITH PUFFED RICE  NEW CRUNCH BAR — AVAILABLE NOW"_
 - Slide-in entrance animation tied to asset load completion
 
 ### Typography
